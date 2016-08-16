@@ -1,29 +1,35 @@
 package uncle.egg.mytools.activity;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import uncle.egg.mytools.R;
 import uncle.egg.mytools.fragment.WeatherFragment;
+import uncle.egg.mytools.fragment.WiFiFragment;
 
 /*
 * 一个小型的个人工具包
 * 功能：
 * 1.天气查询    （使用了volley框架，数据来源：聚合数据）
-*
+* 2.wifi强度查看
 *
 * */
 
@@ -37,9 +43,13 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
 
     private WeatherFragment weatherFragment;
+    private WiFiFragment wiFiFragment;
+
 
     private FragmentManager fm;
     private FragmentTransaction transaction;
+
+    private static final int MY_PERMISSIONS_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -73,10 +84,16 @@ public class MainActivity extends AppCompatActivity
 
         //--------------以上为编译器自动生成 --------------
 
-        weatherFragment = new WeatherFragment();
-        fm = getSupportFragmentManager();
 
+
+        weatherFragment = new WeatherFragment(this);
+        wiFiFragment = new WiFiFragment(this);
+        fm = getSupportFragmentManager();
+        transaction = fm.beginTransaction();
+        transaction.replace(R.id.my_layout, weatherFragment);
+        transaction.commit();
     }
+
 
 
     @Override
@@ -117,17 +134,27 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_waether) {
             // Handle the camera action
-
-
             transaction = fm.beginTransaction();
             transaction.replace(R.id.my_layout, weatherFragment);
             transaction.commit();
-
-
         } else if (id == R.id.nav_gallery) {
 
+            //申请一些权限来显示wifi,6.0以后扫描wifi需要开启定位
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_CODE);
+                } else {
+                    transaction = fm.beginTransaction();
+                    transaction.replace(R.id.my_layout, wiFiFragment);
+                    transaction.commit();
+                }
+            }else {
+                transaction = fm.beginTransaction();
+                transaction.replace(R.id.my_layout, wiFiFragment);
+                transaction.commit();
+            }
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -142,4 +169,28 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        Log.v("MY_TAG", "回调权限申请");
+        if (requestCode == MY_PERMISSIONS_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                transaction = fm.beginTransaction();
+                transaction.replace(R.id.my_layout, wiFiFragment);
+                transaction.commitAllowingStateLoss();
+            } else {
+                // Permission Denied
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+//    private void startWifi(){
+//        transaction = fm.beginTransaction();
+//        transaction.replace(R.id.my_layout, wiFiFragment);
+//        transaction.commit();
+//    }
 }

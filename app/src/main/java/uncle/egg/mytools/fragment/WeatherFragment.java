@@ -1,15 +1,16 @@
 package uncle.egg.mytools.fragment;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -26,10 +27,12 @@ import uncle.egg.mytools.activity.MyApplication;
 
 public class WeatherFragment extends Fragment {
 
-    private View viewLayout;
+    private View viewParent;
+    private Context context;
+    private View viewDialog;
 
     private EditText editCity;
-    private Button btnSelect;
+    private Button btnChange;
     private TextView txtWeatherMessage;
     // 完整的URL
     // private String strUrl = "http://v.juhe.cn/weather/index?format=2&cityname=%E5%AE%9C%E6%98%A5&key=ff1860c2a0255fea2cb737793f45c4fb";
@@ -37,42 +40,48 @@ public class WeatherFragment extends Fragment {
     private static String key = "ff1860c2a0255fea2cb737793f45c4fb";
 
 
+    public WeatherFragment(){
+
+    }
+
+    public WeatherFragment(Context context){
+        this.context = context;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        viewLayout = inflater.inflate(R.layout.fragment_weather, null);
+        viewParent = inflater.inflate(R.layout.frag_weather, container,false);
         init();
-
-        return viewLayout;
+        return viewParent;
     }
 
 
     private void init() {
-        editCity = (EditText) viewLayout.findViewById(R.id.edit_city);
-        btnSelect = (Button) viewLayout.findViewById(R.id.btn_select);
-        txtWeatherMessage = (TextView) viewLayout.findViewById(R.id.txt_weather_message);
 
+        btnChange = (Button) viewParent.findViewById(R.id.btn_weather_change);
+        txtWeatherMessage = (TextView) viewParent.findViewById(R.id.tv_weather_message);
 
-        MyClick myClick = new MyClick();
-
-        btnSelect.setOnClickListener(myClick);
-    }
-
-    private String getCity() {
-        strCity = editCity.getText().toString();
-        return strCity;
-    }
-
-    private class MyClick implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.btn_select: {
-                    setWeatherMessage(getCity(), key);
-                }
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewDialog = LayoutInflater.from(context).inflate(R.layout.dialog_change_city,null);
+                editCity = (EditText) viewDialog.findViewById(R.id.ed_city);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("设置城市").setView(viewDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setWeatherMessage(editCity.getText().toString(), key);
+                    }
+                });
+                builder.create().show();
             }
-        }
+        });
     }
+//
+//    private String getCity() {
+//        strCity = editCity.getText().toString();
+//        return strCity;
+//    }
 
     private void setWeatherMessage(String city, String key) {
         String url = "http://v.juhe.cn/weather/index?format=2&cityname=" + city + "&key=" + key;
