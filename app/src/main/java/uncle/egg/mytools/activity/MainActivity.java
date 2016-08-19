@@ -1,5 +1,6 @@
 package uncle.egg.mytools.activity;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager fm;
     private FragmentTransaction transaction;
 
-    private static final int MY_PERMISSIONS_CODE = 1;
+    private static final int MY_PERMISSIONS_LOCATION_CODE = 1;
+    private static final int MY_PERMISSIONS_PHONT_STATE_CODE=2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,17 @@ public class MainActivity extends AppCompatActivity
         transaction = fm.beginTransaction();
         transaction.replace(R.id.my_layout, weatherFragment);
         transaction.commit();
+
+        //申请一些权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//6.0时
+            if (this.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_PHONT_STATE_CODE);
+            } else {
+
+            }
+        }else { //6.0以下时
+
+        }
     }
 
 
@@ -144,7 +157,7 @@ public class MainActivity extends AppCompatActivity
             //申请一些权限来显示wifi,6.0以后扫描wifi需要开启定位
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_CODE);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_LOCATION_CODE);
                 } else {
                     transaction = fm.beginTransaction();
                     transaction.replace(R.id.my_layout, wiFiFragment);
@@ -174,11 +187,20 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         Log.v("MY_TAG", "回调权限申请");
-        if (requestCode == MY_PERMISSIONS_CODE) {
+        if (requestCode == MY_PERMISSIONS_LOCATION_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 transaction = fm.beginTransaction();
                 transaction.replace(R.id.my_layout, wiFiFragment);
                 transaction.commitAllowingStateLoss();
+            } else {
+                // Permission Denied
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        if(requestCode==MY_PERMISSIONS_PHONT_STATE_CODE){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
             } else {
                 // Permission Denied
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();

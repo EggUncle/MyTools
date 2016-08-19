@@ -17,6 +17,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.baidu.apistore.sdk.ApiCallBack;
+import com.baidu.apistore.sdk.ApiStoreSDK;
+import com.baidu.apistore.sdk.network.Parameters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +73,8 @@ public class WeatherFragment extends Fragment {
                 builder.setTitle("设置城市").setView(viewDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        setWeatherMessage(editCity.getText().toString(), key);
+                       // setWeatherMessage(editCity.getText().toString(), key);
+                        getWeatherMessage(editCity.getText().toString());
                     }
                 });
                 builder.create().show();
@@ -83,50 +87,79 @@ public class WeatherFragment extends Fragment {
 //        return strCity;
 //    }
 
-    private void setWeatherMessage(String city, String key) {
-        String url = "http://v.juhe.cn/weather/index?format=2&cityname=" + city + "&key=" + key;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
+//    private void setWeatherMessage(String city, String key) {
+//        String url = "http://v.juhe.cn/weather/index?format=2&cityname=" + city + "&key=" + key;
+//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject jsonObject) {
+//                        //   String json = null;
+//                        String resultCode = null;
+//                        String strWeatherMessage = null;
+//                        JSONObject json;
+//                        try {
+//
+//                            resultCode = jsonObject.getString("resultcode");
+//
+//                            if (!"200".equals(resultCode)) {
+//                                //若返回码不200，说明请求失败
+//                                txtWeatherMessage.setText("connection fail");
+//                                return;
+//                            }
+//
+//                            json = jsonObject.getJSONObject("result").getJSONObject("today");
+//                            String weather = json.getString("weather");
+//                            String temperature = json.getString("temperature");
+//                            String city = json.getString("city");
+//                            strWeatherMessage="城市："+city+"\n"+"天气："+weather+"\n"+"温度："+temperature;
+//                            txtWeatherMessage.setText(strWeatherMessage);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError volleyError) {
+//                        txtWeatherMessage.setText("访问失败!");
+//                        //   text.setText(volleyError.toString());
+//                    }
+//                });
+//
+//        request.setTag("weatherGet");
+//        MyApplication.getHttpQueues().add(request);
+//
+//    }
+
+
+    /**
+     * @param cityName
+     *
+     * 调用百度APIStore的API，获取天气信息
+     */
+    private void getWeatherMessage(String cityName){
+        Parameters para = new Parameters();
+
+        para.put("city",cityName);
+        ApiStoreSDK.execute("http://apis.baidu.com/heweather/weather/free",ApiStoreSDK.GET,para,
+                new ApiCallBack(){
                     @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        //   String json = null;
-                        String resultCode = null;
-                        String strWeatherMessage = null;
-                        JSONObject json;
-                        try {
-
-                            resultCode = jsonObject.getString("resultcode");
-
-                            if (!"200".equals(resultCode)) {
-                                //若返回码不200，说明请求失败
-                                txtWeatherMessage.setText("connection fail");
-                                return;
-                            }
-
-                            json = jsonObject.getJSONObject("result").getJSONObject("today");
-                            String weather = json.getString("weather");
-                            String temperature = json.getString("temperature");
-                            String city = json.getString("city");
-                            strWeatherMessage="城市："+city+"\n"+"天气："+weather+"\n"+"温度："+temperature;
-                            txtWeatherMessage.setText(strWeatherMessage);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
+                    public void onSuccess(int i, String s) {  //请求成功时调用
+                        txtWeatherMessage.setText(s);
                     }
-                },
-                new Response.ErrorListener() {
+
                     @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        txtWeatherMessage.setText("访问失败!");
-                        //   text.setText(volleyError.toString());
+                    public void onComplete() {    //总是会调用
+                        super.onComplete();
                     }
-                });
 
-        request.setTag("weatherGet");
-        MyApplication.getHttpQueues().add(request);
-
+                    @Override
+                    public void onError(int i, String s, Exception e) { //请求失败时调用
+                        txtWeatherMessage.setText(s);
+                    }
+                }
+        );
     }
-
 
 }
