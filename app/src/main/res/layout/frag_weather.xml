@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="uncle.egg.mytools.fragment.WeatherFragment">
 
         <LinearLayout
@@ -21,6 +22,14 @@
                 android:id="@+id/tv_weather_message"
                 />
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcv_weather"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager"/>
+
         </LinearLayout>
+
+
 
 </FrameLayout>

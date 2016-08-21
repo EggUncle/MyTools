@@ -1,14 +1,18 @@
 package uncle.egg.mytools.model.weather;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by egguncle on 16.8.20.
  */
 public class Cond
 {
+    @SerializedName("code")
     private String code_d;
 
     private String code_n;
 
+    @SerializedName("txt")
     private String txt_d;
 
     private String txt_n;

@@ -5,29 +5,28 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.baidu.apistore.sdk.ApiCallBack;
 import com.baidu.apistore.sdk.ApiStoreSDK;
 import com.baidu.apistore.sdk.network.Parameters;
+import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
 import uncle.egg.mytools.R;
-import uncle.egg.mytools.activity.MyApplication;
+import uncle.egg.mytools.adapter.WeatherFragmentAdapter;
+import uncle.egg.mytools.model.weather.Daily_forecast;
+import uncle.egg.mytools.model.weather.Root;
 
 
+//天气数据来源  http://apistore.baidu.com/apiworks/servicedetail/478.html
 public class WeatherFragment extends Fragment {
 
     private View viewParent;
@@ -37,11 +36,13 @@ public class WeatherFragment extends Fragment {
     private EditText editCity;
     private Button btnChange;
     private TextView txtWeatherMessage;
+    private RecyclerView rcvWeather;
+    private WeatherFragmentAdapter weatherFragmentAdapter;
+    private List<Daily_forecast> listDailyForecast;
+
+    private String defaultCityName = "北京";
     // 完整的URL
     // private String strUrl = "http://v.juhe.cn/weather/index?format=2&cityname=%E5%AE%9C%E6%98%A5&key=ff1860c2a0255fea2cb737793f45c4fb";
-    private String strCity;
-    private static String key = "ff1860c2a0255fea2cb737793f45c4fb";
-
 
     public WeatherFragment(){
 
@@ -61,6 +62,10 @@ public class WeatherFragment extends Fragment {
 
     private void init() {
 
+        rcvWeather = (RecyclerView) viewParent.findViewById(R.id.rcv_weather);
+
+
+        getWeatherMessage(defaultCityName);
         btnChange = (Button) viewParent.findViewById(R.id.btn_weather_change);
         txtWeatherMessage = (TextView) viewParent.findViewById(R.id.tv_weather_message);
 
@@ -75,78 +80,42 @@ public class WeatherFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                        // setWeatherMessage(editCity.getText().toString(), key);
                         getWeatherMessage(editCity.getText().toString());
+
                     }
                 });
                 builder.create().show();
             }
         });
     }
-//
-//    private String getCity() {
-//        strCity = editCity.getText().toString();
-//        return strCity;
-//    }
-
-//    private void setWeatherMessage(String city, String key) {
-//        String url = "http://v.juhe.cn/weather/index?format=2&cityname=" + city + "&key=" + key;
-//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject jsonObject) {
-//                        //   String json = null;
-//                        String resultCode = null;
-//                        String strWeatherMessage = null;
-//                        JSONObject json;
-//                        try {
-//
-//                            resultCode = jsonObject.getString("resultcode");
-//
-//                            if (!"200".equals(resultCode)) {
-//                                //若返回码不200，说明请求失败
-//                                txtWeatherMessage.setText("connection fail");
-//                                return;
-//                            }
-//
-//                            json = jsonObject.getJSONObject("result").getJSONObject("today");
-//                            String weather = json.getString("weather");
-//                            String temperature = json.getString("temperature");
-//                            String city = json.getString("city");
-//                            strWeatherMessage="城市："+city+"\n"+"天气："+weather+"\n"+"温度："+temperature;
-//                            txtWeatherMessage.setText(strWeatherMessage);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError volleyError) {
-//                        txtWeatherMessage.setText("访问失败!");
-//                        //   text.setText(volleyError.toString());
-//                    }
-//                });
-//
-//        request.setTag("weatherGet");
-//        MyApplication.getHttpQueues().add(request);
-//
-//    }
-
 
     /**
      * @param cityName
      *
      * 调用百度APIStore的API，获取天气信息
      */
-    private void getWeatherMessage(String cityName){
+    private void getWeatherMessage(String cityName) {
         Parameters para = new Parameters();
-
-        para.put("city",cityName);
-        ApiStoreSDK.execute("http://apis.baidu.com/heweather/weather/free",ApiStoreSDK.GET,para,
+        para.put("city", cityName);
+        ApiStoreSDK.execute("http://apis.baidu.com/heweather/weather/free", ApiStoreSDK.GET, para,
                 new ApiCallBack(){
                     @Override
                     public void onSuccess(int i, String s) {  //请求成功时调用
-                        txtWeatherMessage.setText(s);
+                        //  txtWeatherMessage.setText(s);
+                        String json = s;
+                        Gson gson = new Gson();
+                        Root root = gson.fromJson(json, Root.class);
+                        listDailyForecast = root.getHeWeather().get(0).getDaily_forecast();
+                        if(weatherFragmentAdapter==null){
+                            txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
+                            weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
+                            rcvWeather.setAdapter(weatherFragmentAdapter);
+                        }else{
+                            txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
+                            weatherFragmentAdapter.notifyDataSetChanged();
+                            rcvWeather.setAdapter(weatherFragmentAdapter);
+                        }
+                       // weatherFragmentAdapter.notifyDataSetChanged();
+                        //txtWeatherMessage.setText(root.getHeWeather().get(0).getDaily_forecast().get(0).getDate());
                     }
 
                     @Override
@@ -160,6 +129,8 @@ public class WeatherFragment extends Fragment {
                     }
                 }
         );
+
     }
+
 
 }

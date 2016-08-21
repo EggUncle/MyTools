@@ -1,5 +1,7 @@
 package uncle.egg.mytools.model.weather;
 
+
+
 /**
  * Created by egguncle on 16.8.20.
  */
