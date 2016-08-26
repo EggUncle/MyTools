@@ -2,10 +2,12 @@ package uncle.egg.mytools.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +46,14 @@ public class WeatherFragment extends Fragment {
     // 完整的URL
     // private String strUrl = "http://v.juhe.cn/weather/index?format=2&cityname=%E5%AE%9C%E6%98%A5&key=ff1860c2a0255fea2cb737793f45c4fb";
 
+
     public WeatherFragment(){
 
     }
 
     public WeatherFragment(Context context){
         this.context = context;
+
     }
 
     @Override
@@ -63,9 +67,9 @@ public class WeatherFragment extends Fragment {
     private void init() {
 
         rcvWeather = (RecyclerView) viewParent.findViewById(R.id.rcv_weather);
-
-
-        getWeatherMessage(defaultCityName);
+//        weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
+//        rcvWeather.setAdapter(weatherFragmentAdapter);
+        //  getWeatherMessage(defaultCityName);
         btnChange = (Button) viewParent.findViewById(R.id.btn_weather_change);
         txtWeatherMessage = (TextView) viewParent.findViewById(R.id.tv_weather_message);
 
@@ -79,13 +83,15 @@ public class WeatherFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                        // setWeatherMessage(editCity.getText().toString(), key);
-                        getWeatherMessage(editCity.getText().toString());
+                          getWeatherMessage(editCity.getText().toString());
 
                     }
                 });
                 builder.create().show();
             }
         });
+
+        getWeatherMessage(defaultCityName);
     }
 
     /**
@@ -103,17 +109,21 @@ public class WeatherFragment extends Fragment {
                         //  txtWeatherMessage.setText(s);
                         String json = s;
                         Gson gson = new Gson();
-                        Root root = gson.fromJson(json, Root.class);
+                        Root root= gson.fromJson(json, Root.class);
                         listDailyForecast = root.getHeWeather().get(0).getDaily_forecast();
-                        if(weatherFragmentAdapter==null){
-                            txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
-                            weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
-                            rcvWeather.setAdapter(weatherFragmentAdapter);
-                        }else{
-                            txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
-                            weatherFragmentAdapter.notifyDataSetChanged();
-                            rcvWeather.setAdapter(weatherFragmentAdapter);
-                        }
+                        weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
+                        rcvWeather.setAdapter(weatherFragmentAdapter);
+//                        if(weatherFragmentAdapter==null){
+//                            //      txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
+//                            weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
+//                          //  weatherFragmentAdapter.notifyDataSetChanged();
+//                        }else{
+//                        //    weatherFragmentAdapter.notifyDataSetChanged();
+//                            //txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
+//                            //     weatherFragmentAdapter.notifyDataSetChanged();
+//                            //    rcvWeather.setAdapter(weatherFragmentAdapter);
+//                        }
+
                        // weatherFragmentAdapter.notifyDataSetChanged();
                         //txtWeatherMessage.setText(root.getHeWeather().get(0).getDaily_forecast().get(0).getDate());
                     }
@@ -121,6 +131,8 @@ public class WeatherFragment extends Fragment {
                     @Override
                     public void onComplete() {    //总是会调用
                         super.onComplete();
+//                        weatherFragmentAdapter.notifyDataSetChanged();
+//                        rcvWeather.setAdapter(weatherFragmentAdapter);
                     }
 
                     @Override
@@ -129,8 +141,33 @@ public class WeatherFragment extends Fragment {
                     }
                 }
         );
-
     }
 
+
+//    private class MyASyncTask extends AsyncTask<String, Integer, List<Daily_forecast>> {
+//
+//
+//        @Override
+//        protected void onPreExecute() {
+//            Log.v("MY_TAG", "准备加载");
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<Daily_forecast> daily_forecasts) {
+//            Log.v("MY_TAG", "加载完成");
+//            super.onPostExecute(daily_forecasts);
+//            weatherFragmentAdapter = new WeatherFragmentAdapter(context, daily_forecasts);
+//            rcvWeather.setAdapter(weatherFragmentAdapter);
+//        }
+//
+//        @Override
+//        protected List<Daily_forecast> doInBackground(String... params) {
+//            Log.v("MY_TAG", "正在加载");
+//            List<Daily_forecast> daily_forecasts = getWeatherMessage(params[0].toString());
+//
+//            return daily_forecasts;
+//        }
+//    }
 
 }

@@ -51,8 +51,8 @@ public class WeatherFragmentAdapter extends RecyclerView.Adapter<WeatherFragment
 
     @Override
     public int getItemCount() {
-        return 1;
-        //  return listDailyForecast == null ? 0 : listDailyForecast.size();
+        //    return 1;
+        return listDailyForecast == null ? 0 : listDailyForecast.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
