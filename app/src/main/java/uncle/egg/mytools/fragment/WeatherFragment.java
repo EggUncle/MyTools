@@ -113,26 +113,11 @@ public class WeatherFragment extends Fragment {
                         listDailyForecast = root.getHeWeather().get(0).getDaily_forecast();
                         weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
                         rcvWeather.setAdapter(weatherFragmentAdapter);
-//                        if(weatherFragmentAdapter==null){
-//                            //      txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
-//                            weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
-//                          //  weatherFragmentAdapter.notifyDataSetChanged();
-//                        }else{
-//                        //    weatherFragmentAdapter.notifyDataSetChanged();
-//                            //txtWeatherMessage.setText(root.getHeWeather().get(0).getBasic().getCity());
-//                            //     weatherFragmentAdapter.notifyDataSetChanged();
-//                            //    rcvWeather.setAdapter(weatherFragmentAdapter);
-//                        }
-
-                       // weatherFragmentAdapter.notifyDataSetChanged();
-                        //txtWeatherMessage.setText(root.getHeWeather().get(0).getDaily_forecast().get(0).getDate());
                     }
 
                     @Override
                     public void onComplete() {    //总是会调用
                         super.onComplete();
-//                        weatherFragmentAdapter.notifyDataSetChanged();
-//                        rcvWeather.setAdapter(weatherFragmentAdapter);
                     }
 
                     @Override
@@ -143,31 +128,5 @@ public class WeatherFragment extends Fragment {
         );
     }
 
-
-//    private class MyASyncTask extends AsyncTask<String, Integer, List<Daily_forecast>> {
-//
-//
-//        @Override
-//        protected void onPreExecute() {
-//            Log.v("MY_TAG", "准备加载");
-//            super.onPreExecute();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<Daily_forecast> daily_forecasts) {
-//            Log.v("MY_TAG", "加载完成");
-//            super.onPostExecute(daily_forecasts);
-//            weatherFragmentAdapter = new WeatherFragmentAdapter(context, daily_forecasts);
-//            rcvWeather.setAdapter(weatherFragmentAdapter);
-//        }
-//
-//        @Override
-//        protected List<Daily_forecast> doInBackground(String... params) {
-//            Log.v("MY_TAG", "正在加载");
-//            List<Daily_forecast> daily_forecasts = getWeatherMessage(params[0].toString());
-//
-//            return daily_forecasts;
-//        }
-//    }
 
 }
