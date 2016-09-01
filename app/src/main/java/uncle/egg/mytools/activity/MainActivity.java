@@ -1,6 +1,7 @@
 package uncle.egg.mytools.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,16 +15,20 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import uncle.egg.mytools.R;
 import uncle.egg.mytools.fragment.WeatherFragment;
+import uncle.egg.mytools.fragment.WeatherFragment2;
 import uncle.egg.mytools.fragment.WiFiFragment;
 
 /*
@@ -43,9 +48,12 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
-    private WeatherFragment weatherFragment;
+   // private WeatherFragment weatherFragment;
+    private WeatherFragment2 weatherFragment;
     private WiFiFragment wiFiFragment;
-
+    private View viewCityDialog;
+    private EditText editCity;
+    private String nowCity;
 
     private FragmentManager fm;
     private FragmentTransaction transaction;
@@ -88,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        weatherFragment = new WeatherFragment(this);
+        weatherFragment = new WeatherFragment2(this);
         wiFiFragment = new WiFiFragment(this);
         fm = getSupportFragmentManager();
         transaction = fm.beginTransaction();
@@ -135,6 +143,19 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            viewCityDialog = LayoutInflater.from(this).inflate(R.layout.dialog_change_city,null);
+            editCity = (EditText) viewCityDialog.findViewById(R.id.ed_city);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("设置城市").setView(viewCityDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // setWeatherMessage(editCity.getText().toString(), key);
+                    nowCity = editCity.getText().toString();
+                    weatherFragment.startRshWeather(nowCity);
+                }
+            });
+            builder.create().show();
+
             return true;
         }
 

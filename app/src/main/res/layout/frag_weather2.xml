@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/rsh_weather_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Null"
+                    android:textSize="100sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:text="℃"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/tv_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Null"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_weahter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:text="Null"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/tv_temperature_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Null"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" ~ " />
+
+                <TextView
+                    android:id="@+id/tv_temperature_max"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Null"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:text="℃"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

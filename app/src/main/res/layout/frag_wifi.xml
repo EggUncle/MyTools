@@ -5,16 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/rsh_wifi"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
         android:id="@+id/rcv_wifi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"/>
 
-<!--<TextView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:id="@+id/tv_wifi"-->
-    <!--/>-->
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

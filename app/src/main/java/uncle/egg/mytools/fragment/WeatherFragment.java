@@ -1,17 +1,14 @@
 package uncle.egg.mytools.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,11 +33,13 @@ public class WeatherFragment extends Fragment {
     private View viewDialog;
 
     private EditText editCity;
-    private Button btnChange;
     private TextView txtWeatherMessage;
     private RecyclerView rcvWeather;
     private WeatherFragmentAdapter weatherFragmentAdapter;
     private List<Daily_forecast> listDailyForecast;
+
+    private SwipeRefreshLayout rshWeather;
+    private String nowCityInFrg;
 
     private String defaultCityName = "北京";
     // 完整的URL
@@ -70,26 +69,51 @@ public class WeatherFragment extends Fragment {
 //        weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
 //        rcvWeather.setAdapter(weatherFragmentAdapter);
         //  getWeatherMessage(defaultCityName);
-        btnChange = (Button) viewParent.findViewById(R.id.btn_weather_change);
-        txtWeatherMessage = (TextView) viewParent.findViewById(R.id.tv_weather_message);
+        //  btnChange = (Button) viewParent.findViewById(R.id.btn_weather_change);
+//        txtWeatherMessage = (TextView) viewParent.findViewById(R.id.tv_weather_message);
 
-        btnChange.setOnClickListener(new View.OnClickListener() {
+//        btnChange.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                viewDialog = LayoutInflater.from(context).inflate(R.layout.dialog_change_city,null);
+//                editCity = (EditText) viewDialog.findViewById(R.id.ed_city);
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                builder.setTitle("设置城市").setView(viewDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                       // setWeatherMessage(editCity.getText().toString(), key);
+//                        nowCity = editCity.getText().toString();
+//                        getWeatherMessage(nowCity);
+//
+//                    }
+//                });
+//                builder.create().show();
+//            }
+//        });
+
+        rshWeather = (SwipeRefreshLayout) viewParent.findViewById(R.id.rsh_weather);
+        rshWeather.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
-                viewDialog = LayoutInflater.from(context).inflate(R.layout.dialog_change_city,null);
-                editCity = (EditText) viewDialog.findViewById(R.id.ed_city);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("设置城市").setView(viewDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            public void onRefresh() {
+                rshWeather.postDelayed(new Runnable() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                       // setWeatherMessage(editCity.getText().toString(), key);
-                          getWeatherMessage(editCity.getText().toString());
+                    public void run() {
+                        if("".equals(nowCityInFrg)){
+                            nowCityInFrg = defaultCityName;
+                        }
 
+                        getWeatherMessage(nowCityInFrg);
+                        Log.v("MY_TAG", "刷新,城市为:" + nowCityInFrg);
+                        rshWeather.setRefreshing(false);
                     }
-                });
-                builder.create().show();
+                },2000);
             }
         });
+        rshWeather.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_red_light));
+
 
         getWeatherMessage(defaultCityName);
     }
@@ -113,6 +137,7 @@ public class WeatherFragment extends Fragment {
                         listDailyForecast = root.getHeWeather().get(0).getDaily_forecast();
                         weatherFragmentAdapter = new WeatherFragmentAdapter(context, listDailyForecast);
                         rcvWeather.setAdapter(weatherFragmentAdapter);
+
                     }
 
                     @Override
@@ -122,11 +147,18 @@ public class WeatherFragment extends Fragment {
 
                     @Override
                     public void onError(int i, String s, Exception e) { //请求失败时调用
-                        txtWeatherMessage.setText(s);
+                      Log.v("MY_TAG","Error!!!!! ");
                     }
                 }
         );
     }
 
+
+    public void startRshWeather(String nowCity) {
+        nowCityInFrg = nowCity;
+        rshWeather.setRefreshing(true);
+        getWeatherMessage(nowCity);
+        rshWeather.setRefreshing(false);
+    }
 
 }
