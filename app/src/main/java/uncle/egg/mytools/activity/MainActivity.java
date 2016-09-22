@@ -61,6 +61,10 @@ public class MainActivity extends AppCompatActivity
     private static final int MY_PERMISSIONS_LOCATION_CODE = 1;
     private static final int MY_PERMISSIONS_PHONT_STATE_CODE=2;
 
+    private static final int FAB_CITY_SET=1;
+    private static final int FAB_WIFI_SET=2;
+    private static int fabStatus=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +81,29 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                switch (fabStatus){
+                    case 1:{
+                        viewCityDialog = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_change_city,null);
+                        editCity = (EditText) viewCityDialog.findViewById(R.id.ed_city);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("设置城市").setView(viewCityDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // setWeatherMessage(editCity.getText().toString(), key);
+                                nowCity = editCity.getText().toString();
+                                weatherFragment.startRshWeather(nowCity);
+                            }
+                        });
+                        builder.create().show();
+                    }break;
+                    case 2:{}break;
+                    default:{
+                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }break;
+                }
 
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
             }
         });
 
@@ -173,6 +197,8 @@ public class MainActivity extends AppCompatActivity
             transaction = fm.beginTransaction();
             transaction.replace(R.id.my_layout, weatherFragment);
             transaction.commit();
+            fab.setImageResource(R.mipmap.ic_city);
+            fabStatus = FAB_CITY_SET;
         } else if (id == R.id.nav_gallery) {
 
             //申请一些权限来显示wifi,6.0以后扫描wifi需要开启定位
@@ -189,6 +215,9 @@ public class MainActivity extends AppCompatActivity
                 transaction.replace(R.id.my_layout, wiFiFragment);
                 transaction.commit();
             }
+            fab.setImageResource(R.mipmap.ic_wifi_2);
+            fabStatus=FAB_WIFI_SET;
+
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -230,6 +259,10 @@ public class MainActivity extends AppCompatActivity
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+
+
+
 
 //    private void startWifi(){
 //        transaction = fm.beginTransaction();

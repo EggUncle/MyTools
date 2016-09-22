@@ -1,13 +1,18 @@
 package uncle.egg.mytools.fragment;
 
 import android.content.Context;
+
 import android.os.Bundle;
+
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baidu.apistore.sdk.ApiCallBack;
@@ -17,7 +22,10 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+
+
 import uncle.egg.mytools.R;
+
 import uncle.egg.mytools.model.weather.Daily_forecast;
 import uncle.egg.mytools.model.weather.Now;
 import uncle.egg.mytools.model.weather.Root;
@@ -31,7 +39,7 @@ import uncle.egg.mytools.model.weather.Root;
 public class WeatherFragment2 extends Fragment {
 
     private View viewParent;
-    private Context context;
+    private Context mContext;
 
 
     private List<Daily_forecast> listDailyForecast;
@@ -42,6 +50,7 @@ public class WeatherFragment2 extends Fragment {
     private TextView tvWeahter;
     private TextView tvTemperatureMin;
     private TextView tvTemperatureMax;
+    private LinearLayout mLineWeather;
 
 
     private String nowCityInFrg;
@@ -56,26 +65,28 @@ public class WeatherFragment2 extends Fragment {
     }
 
     public WeatherFragment2(Context context) {
-        this.context = context;
+        this.mContext = context;
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewParent = inflater.inflate(R.layout.frag_weather2, container, false);
-        init();
+        initView();
+        initVar();
         return viewParent;
     }
 
 
-    private void init() {
-        rshWeather2 = (SwipeRefreshLayout) viewParent.findViewById(R.id.rsh_weather_2);
+    private void initView() {
+
         tvTemperature = (TextView) viewParent.findViewById(R.id.tv_temperature);
         tvCity = (TextView) viewParent.findViewById(R.id.tv_city);
         tvWeahter = (TextView) viewParent.findViewById(R.id.tv_weahter);
         tvTemperatureMin = (TextView) viewParent.findViewById(R.id.tv_temperature_min);
         tvTemperatureMax = (TextView) viewParent.findViewById(R.id.tv_temperature_max);
 
+        rshWeather2 = (SwipeRefreshLayout) viewParent.findViewById(R.id.rsh_weather_2);
         rshWeather2.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -98,6 +109,12 @@ public class WeatherFragment2 extends Fragment {
                 getResources().getColor(android.R.color.holo_red_light));
 
 
+
+        mLineWeather = (LinearLayout) viewParent.findViewById(R.id.line_weather);
+
+    }
+
+    private void initVar(){
         getWeatherMessage(defaultCityName);
     }
 
