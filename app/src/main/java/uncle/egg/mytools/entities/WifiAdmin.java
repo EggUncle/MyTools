@@ -1,4 +1,4 @@
-package uncle.egg.mytools.model;
+package uncle.egg.mytools.entities;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;

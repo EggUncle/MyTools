@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -28,13 +27,12 @@ import android.widget.Toast;
 
 import uncle.egg.mytools.R;
 import uncle.egg.mytools.fragment.WeatherFragment;
-import uncle.egg.mytools.fragment.WeatherFragment2;
 import uncle.egg.mytools.fragment.WiFiFragment;
 
 /*
 * 一个小型的个人工具包
 * 功能：
-* 1.天气查询    （使用了volley框架，数据来源：聚合数据）
+* 1.天气查询
 * 2.wifi强度查看
 *
 * */
@@ -43,13 +41,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar toolbar;
-    private FloatingActionButton fab;
+   // private FloatingActionButton fab;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
    // private WeatherFragment weatherFragment;
-    private WeatherFragment2 weatherFragment;
+    private WeatherFragment weatherFragment;
     private WiFiFragment wiFiFragment;
     private View viewCityDialog;
     private EditText editCity;
@@ -63,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int FAB_CITY_SET=1;
     private static final int FAB_WIFI_SET=2;
-    private static int fabStatus=0;
+    private static int fabStatus=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,35 +75,6 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (fabStatus){
-                    case 1:{
-                        viewCityDialog = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_change_city,null);
-                        editCity = (EditText) viewCityDialog.findViewById(R.id.ed_city);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle("设置城市").setView(viewCityDialog).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // setWeatherMessage(editCity.getText().toString(), key);
-                                nowCity = editCity.getText().toString();
-                                weatherFragment.startRshWeather(nowCity);
-                            }
-                        });
-                        builder.create().show();
-                    }break;
-                    case 2:{}break;
-                    default:{
-                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }break;
-                }
-
-
-            }
-        });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -120,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        weatherFragment = new WeatherFragment2(this);
+        weatherFragment = new WeatherFragment(this);
         wiFiFragment = new WiFiFragment(this);
         fm = getSupportFragmentManager();
         transaction = fm.beginTransaction();
@@ -175,7 +144,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int which) {
                     // setWeatherMessage(editCity.getText().toString(), key);
                     nowCity = editCity.getText().toString();
-                    weatherFragment.startRshWeather(nowCity);
+                   // weatherFragment.startRshWeather(nowCity);
                 }
             });
             builder.create().show();
@@ -197,7 +166,7 @@ public class MainActivity extends AppCompatActivity
             transaction = fm.beginTransaction();
             transaction.replace(R.id.my_layout, weatherFragment);
             transaction.commit();
-            fab.setImageResource(R.mipmap.ic_city);
+         //   fab.setImageResource(R.mipmap.icon_add);
             fabStatus = FAB_CITY_SET;
         } else if (id == R.id.nav_gallery) {
 
@@ -215,7 +184,7 @@ public class MainActivity extends AppCompatActivity
                 transaction.replace(R.id.my_layout, wiFiFragment);
                 transaction.commit();
             }
-            fab.setImageResource(R.mipmap.ic_wifi_2);
+        //    fab.setImageResource(R.mipmap.ic_wifi_2);
             fabStatus=FAB_WIFI_SET;
 
         } else if (id == R.id.nav_slideshow) {
@@ -259,14 +228,4 @@ public class MainActivity extends AppCompatActivity
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
-
-
-
-
-//    private void startWifi(){
-//        transaction = fm.beginTransaction();
-//        transaction.replace(R.id.my_layout, wiFiFragment);
-//        transaction.commit();
-//    }
 }

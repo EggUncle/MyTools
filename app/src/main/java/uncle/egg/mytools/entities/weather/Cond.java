@@ -1,4 +1,4 @@
-package uncle.egg.mytools.model.weather;
+package uncle.egg.mytools.entities.weather;
 
 import com.google.gson.annotations.SerializedName;
 

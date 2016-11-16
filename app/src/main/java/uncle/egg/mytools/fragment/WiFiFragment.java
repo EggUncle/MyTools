@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import uncle.egg.mytools.R;
 import uncle.egg.mytools.adapter.WiFiFragmentAdapter;
-import uncle.egg.mytools.model.WifiAdmin;
+import uncle.egg.mytools.entities.WifiAdmin;
 
 /**
  * Created by egguncle on 16.8.16.

@@ -1,9 +1,9 @@
-package uncle.egg.mytools.model.weather;
+package uncle.egg.mytools.entities.weather;
 
 /**
  * Created by egguncle on 16.8.20.
  */
-public class Cw
+public class Drsg
 {
     private String brf;
 
